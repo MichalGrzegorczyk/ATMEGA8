@@ -1,0 +1,31 @@
+#define F_CPU 1000000L
+#include <stdbool.h>
+#include <avr/io.h>
+#include <util/delay.h>
+
+#define LED1 (1 << PA1)
+#define LED2 (1 << PA7)
+
+// PINB: xxxxxxx0
+// 1 << PB0 = 00000001
+int main(void) {
+	DDRA |= LED2;  // UStawienie kierunku linii portu A w stronę wyjścia
+	DDRB &= ~(1 << PB0);  // Ustawienie kierunku linii portu B w stronę wejścia
+	PORTB |= (1 << PB0);  // Aktywowanie rezystora podciągającego
+	bool isLED2 = false; //zmienna informująca o stanie diody true - zapalona, false - zgaszona
+	while (1)  //nieskończona pętla
+	{
+		_delay_ms(100);
+		if (!(PINB & (1 << PB0)))  // Sprawdzanie czy przycisk jest naciśnięty
+		{
+			if (isLED2 == true) {
+				PORTA |= LED2;         // Zapalenie LED
+				_delay_ms(100);        // Opóźnienie o 100ms
+			}
+			else {
+				PORTB &= ~(1 << PB0);  // Zgaszenie LED
+				_delay_ms(100);       // Opóźnienie o 100ms
+			}
+		}
+	}
+}
